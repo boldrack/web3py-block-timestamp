@@ -1,5 +1,5 @@
 import time
-from blocktimestamp import Block, BlockTimestamp
+from blocktimestamp import BlockTimestamp
 from web3 import Web3
 
 if __name__ == '__main__':
@@ -9,5 +9,7 @@ if __name__ == '__main__':
     bt = BlockTimestamp(w3)
     ts = int(time.time()) - 94608000#(3600 * 10 ) 
     res = bt.timestamp_to_block(ts)
+
+    print(res)
 
 

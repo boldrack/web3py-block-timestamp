@@ -67,8 +67,13 @@ class BlockTimestamp(object):
 
 
     def _get_blocktime_raw(self, start: int, latest: int, start_n: int, latest_n: int) -> int:
-        return int((latest - start) / latest_n - start_n)
+        print(f'{start} {latest} {start_n} {latest_n}')
+        try:
+            c_blocktime = int((latest - start) / (latest_n - start_n))
+        except ZeroDivisionError:
+            c_blocktime = int((latest - start) / 1)
 
+        return c_blocktime
 
     def _get_blocktime(self, genesis: Block, latest: Block) -> int:
         '''
@@ -77,7 +82,7 @@ class BlockTimestamp(object):
         that's the ; total timestamp / block count 
         # return int((latest.timestamp - genesis.timestamp) / ( latest.number - genesis.number))
         '''
-        return self._get_blocktime_raw(genesis.timestamp, latest.timestamp, genesis.number, latest.number)
+        return abs(self._get_blocktime_raw(genesis.timestamp, latest.timestamp, genesis.number, latest.number))
 
 
     def _datetime_isbefore(self, date_ts: int, date_ts_b: int):
@@ -140,10 +145,16 @@ class BlockTimestamp(object):
         ...[x]..TS..[w].. ( w is the next block )
         '''
         print(f'_is_better_bloc(): {timestamp=}, {block=}')
-        if block.timestamp >= timestamp: return False
+        # i think it's a good idea to accept it if it's an exact match
+        if block.timestamp == timestamp: return True
+
+        # we'd like to reject if the block comes before our TS
+        if block.timestamp > timestamp: return False
+
         # block has to be before
         next_block = self._get_block(block.number + 1)
         return block.timestamp < timestamp < next_block.timestamp
+
         # account for `after` and `before`
 
 
@@ -171,6 +182,11 @@ class BlockTimestamp(object):
         # get the predicted block based on the just calculated block steps
         new_block_nmb = predicted_block.number + block_steps
         new_predicted_block = self._get_block(new_block_nmb)
+
+        # compute a new block time based on the new boundaries 
+        # the new predicted block and former predicted block
+        new_blocktime = self._get_blocktime(new_predicted_block, predicted_block)
+        print(f'{new_blocktime=}')
 
         return self._find_better(new_predicted_block, target_ts)
 
