@@ -1,5 +1,6 @@
+
 import time
-from src.blocktimestamp import BlockTimestamp
+from blocktimestamp import BlockTimestamp
 from web3 import Web3
 
 if __name__ == '__main__':

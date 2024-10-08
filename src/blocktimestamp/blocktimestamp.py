@@ -6,17 +6,10 @@ from dataclasses import dataclass, field
 from typing import Union
 
 @dataclass
-class BlockTimestampData:
-    block: int
-    timestamp: int
-    hash: str = field(default_factory=str)
-
-
-@dataclass
 class Block:
     number: int
     timestamp: int
-    hash: str = field(default_factory=str)
+    # hash: str = field(default_factory=str)
 
     
 class BlockTimestamp(object):
@@ -58,7 +51,6 @@ class BlockTimestamp(object):
 
 
     def _get_blocktime_raw(self, start: int, latest: int, start_n: int, latest_n: int) -> int:
-        logger.debug(f'{start} {latest} {start_n} {latest_n}')
         try:
             c_blocktime = int((latest - start) / (latest_n - start_n))
         except ZeroDivisionError:
@@ -99,7 +91,7 @@ class BlockTimestamp(object):
         now_timestamp - firstblock.timestamp ) / blocktime 
         '''
         blocknumber = int(( target_ts - genesis.timestamp )  / blocktime)
-        logger.debug('_get_predicted_block(): ', blocknumber, target_ts)
+        logger.debug(f'_get_predicted_block():  {blocknumber=}, {target_ts=}')
         return self._get_block(blocknumber)
 
 
@@ -135,7 +127,7 @@ class BlockTimestamp(object):
         target timestamp is lesser than the timestamp of the next block
         ...[x]..TS..[w].. ( w is the next block )
         '''
-        logger.debug(f'_is_better_bloc(): {timestamp=}, {block=}')
+        logger.debug(f'_is_better_block(): {timestamp=}, {block=}')
         # i think it's a good idea to accept it if it's an exact match
         if block.timestamp == timestamp: return True
 
@@ -157,7 +149,7 @@ class BlockTimestamp(object):
         'unclear' bug mentioned before. so this will help us peek at the neighbor whenever 
         we try to walk the same block more than once. this usually indicates the issue is on
         '''
-        logger.debug(f'***************** _get_next_block: {timestamp=} {block=} {skips=} ')
+        logger.debug(f'***** _get_next_block: {timestamp=} {block=} {skips=} ')
         next_block = block.number + skips
 
         # if the result block gets us past the latest block, we'd just return the latest instead 
@@ -227,7 +219,7 @@ class BlockTimestamp(object):
         return first block if timestamp is before first block timestamp
         return latest block if timetamp is after or equal latest block timestamp 
         '''
-        logger.debug('xxx timestamp_to_block();', datetime.datetime.fromtimestamp(timestamp))
+        logger.debug(f'timestamp_to_block(): {timestamp} {datetime.datetime.fromtimestamp(timestamp)}')
 
         if not (self._genesis and self._latest): 
             raise Exception('No Genesis or latest setup')

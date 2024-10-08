@@ -1,7 +1,7 @@
 import logging
 
 logger = logging.getLogger('web3-blocktimestamp')
-logger.setLevel(level=logging.WARNING)
+logger.setLevel(level=logging.ERROR)
 formatter = logging.Formatter('%(levelname)s@%(name)s : %(message)s')
 
 stream_handler = logging.StreamHandler()
