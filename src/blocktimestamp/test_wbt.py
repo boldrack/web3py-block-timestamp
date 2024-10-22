@@ -9,6 +9,7 @@ if __name__ == '__main__':
 
     bt = BlockTimestamp(w3)
     ts = int(time.time()) - 94608000#(3600 * 10 ) 
+    print(ts)
     res = bt.timestamp_to_block(ts)
 
     print(res)
